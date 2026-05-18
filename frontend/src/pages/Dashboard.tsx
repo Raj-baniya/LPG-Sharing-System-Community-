@@ -12,6 +12,11 @@ type PanelKey = 'offers' | 'emergency' | 'requests';
 export default function Dashboard() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [toastMessage, setToastMessage] = useState('');
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(''), 3000);
+  };
   const [activePanel, setActivePanel] = useState<PanelKey>('offers');
   const [resources, setResources] = useState<any[]>([]);
   const [emergencies, setEmergencies] = useState<any[]>([]);
@@ -166,10 +171,17 @@ export default function Dashboard() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <button className="p-2 hover:bg-white/10 transition-all rounded-full flex items-center justify-center">
+          <button 
+            onClick={() => showToast("🔔 Notifications synced. You have no pending safety alerts.")}
+            className="p-2 hover:bg-white/10 transition-all rounded-full flex items-center justify-center"
+          >
             <span className="material-symbols-outlined text-white">notifications</span>
           </button>
-          <button className="p-2 hover:bg-white/10 transition-all rounded-full flex items-center justify-center">
+          <button 
+            onClick={() => navigate('/profile')}
+            className="p-2 hover:bg-white/10 transition-all rounded-full flex items-center justify-center"
+            title="Profile Settings"
+          >
             <span className="material-symbols-outlined text-white">settings</span>
           </button>
           <div className="h-8 w-8 rounded-full border border-white/10 overflow-hidden cursor-pointer bg-white/5 flex items-center justify-center text-xs font-black text-white" onClick={() => navigate('/profile')}>
@@ -241,11 +253,25 @@ export default function Dashboard() {
               Register Cylinder
             </button>
             <div className="flex flex-col gap-1">
-              <a className="text-[#C5C7C1] px-4 py-2 flex items-center gap-3 text-xs hover:text-white transition-colors" href="#">
+              <a 
+                className="text-[#C5C7C1] px-4 py-2 flex items-center gap-3 text-xs hover:text-white transition-colors" 
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  showToast("📞 GasSahayak Support Helpline: +91 90000 88888");
+                }}
+              >
                 <span className="material-symbols-outlined !text-sm">help</span>
                 <span>Support</span>
               </a>
-              <a className="text-[#C5C7C1] px-4 py-2 flex items-center gap-3 text-xs hover:text-white transition-colors" href="#">
+              <a 
+                className="text-[#C5C7C1] px-4 py-2 flex items-center gap-3 text-xs hover:text-white transition-colors" 
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  showToast("📄 Terms of Service version 2.4 active.");
+                }}
+              >
                 <span className="material-symbols-outlined !text-sm">description</span>
                 <span>Terms</span>
               </a>
@@ -302,15 +328,24 @@ export default function Dashboard() {
           {/* Floating Controls (Zoom / Location) */}
           <div className="absolute top-6 right-6 flex flex-col gap-2 z-10">
             <div className="bg-surface-container/80 backdrop-blur-md rounded-lg p-1 border border-white/5 flex flex-col shadow-2xl">
-              <button className="p-2 hover:bg-white/10 text-white transition-all rounded-md flex items-center justify-center">
+              <button 
+                onClick={() => showToast("➕ Map Discovery Zoom Level Increased")}
+                className="p-2 hover:bg-white/10 text-white transition-all rounded-md flex items-center justify-center"
+              >
                 <span className="material-symbols-outlined">add</span>
               </button>
               <div className="h-px bg-white/5 mx-2"></div>
-              <button className="p-2 hover:bg-white/10 text-white transition-all rounded-md flex items-center justify-center">
+              <button 
+                onClick={() => showToast("➖ Map Discovery Zoom Level Decreased")}
+                className="p-2 hover:bg-white/10 text-white transition-all rounded-md flex items-center justify-center"
+              >
                 <span className="material-symbols-outlined">remove</span>
               </button>
             </div>
-            <button className="bg-surface-container/80 backdrop-blur-md p-2 rounded-lg border border-white/5 text-white hover:bg-white/10 transition-all shadow-2xl flex items-center justify-center">
+            <button 
+              onClick={() => showToast("📍 Recalculating your current coordinates...")}
+              className="bg-surface-container/80 backdrop-blur-md p-2 rounded-lg border border-white/5 text-white hover:bg-white/10 transition-all shadow-2xl flex items-center justify-center"
+            >
               <span className="material-symbols-outlined">my_location</span>
             </button>
           </div>
@@ -391,6 +426,14 @@ export default function Dashboard() {
           <span className="text-[10px] uppercase tracking-tighter font-bold">Requests</span>
         </button>
       </nav>
+
+      {/* Dynamic Interactive Toast Notification Banner */}
+      {toastMessage && (
+        <div className="fixed bottom-20 right-6 z-50 bg-[#161616] border border-white/10 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-bounce">
+          <span className="material-symbols-outlined text-cyan-400 !text-sm animate-pulse">info</span>
+          <span>{toastMessage}</span>
+        </div>
+      )}
 
     </div>
   );

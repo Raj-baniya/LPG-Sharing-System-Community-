@@ -1,8 +1,8 @@
+import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { MapPin, MessageSquare, Fuel } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 interface CylinderCardProps {
   ownerName: string;
@@ -12,6 +12,8 @@ interface CylinderCardProps {
 }
 
 export function CylinderCard({ ownerName, distance, availability, isVerified = true }: CylinderCardProps) {
+  const navigate = useNavigate();
+
   return (
     <Card className="liquid-glass border-white/5 hover:border-white/20 transition-all group">
       <CardContent className="p-5">
@@ -48,7 +50,11 @@ export function CylinderCard({ ownerName, distance, availability, isVerified = t
               <MessageSquare className="w-3.5 h-3.5" /> Chat
             </Button>
           </Link>
-          <Button size="sm" className="w-full text-[11px] bg-white text-black font-medium">
+          <Button 
+            size="sm" 
+            className="w-full text-[11px] bg-white text-black font-medium"
+            onClick={() => navigate('/booking/standard-refill-request')}
+          >
             Request
           </Button>
         </div>

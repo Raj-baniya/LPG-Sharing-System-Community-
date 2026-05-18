@@ -33,6 +33,10 @@ export type IdReviewQueueItem = {
     isPinVerified?: boolean;
     idDocUrl?: string | null;
     idStatus?: string;
+    mobileNumber?: string;
+    idType?: string;
+    idNumber?: string;
+    providerName?: string;
   };
   trustScore: number;
 };
@@ -47,6 +51,10 @@ export type TrustSnapshot = {
     isPinVerified?: boolean;
     idDocUrl?: string | null;
     idStatus?: string;
+    mobileNumber?: string;
+    idType?: string;
+    idNumber?: string;
+    providerName?: string;
   };
   metrics: {
     totalExchanges: number;
@@ -134,14 +142,20 @@ export const trustApi = {
   getUserTrust: (userId: string) =>
     api<{ success: boolean; trust: TrustSnapshot }>(`/api/trust/user/${userId}`, { withAuth: true }),
 
-  pinVerify: (payload: { pinCode: string; addressText: string }) =>
+  pinVerify: (payload: { pinCode: string; addressText: string; mobileNumber?: string; providerName?: string }) =>
     api<{ success: boolean; message: string }>("/api/verification/pin-verify", {
       method: "POST",
       withAuth: true,
       body: payload,
     }),
 
-  idUpload: (payload: { idDocUrl: string }) =>
+  idUpload: (payload: {
+    idDocUrl?: string;
+    idType?: "AADHAAR" | "PAN";
+    idNumber?: string;
+    mobileNumber?: string;
+    providerName?: string;
+  }) =>
     api<{ success: boolean; message: string }>("/api/verification/id-upload", {
       method: "POST",
       withAuth: true,
@@ -197,4 +211,30 @@ export const trustApi = {
       withAuth: true,
       body: payload,
     }),
+
+  runDisputeEscalation: () =>
+    api<{ success: boolean; message: string; results: unknown }>("/api/internal/run-escalation", {
+      method: "POST",
+      withAuth: true,
+    }),
+
+  listAuditLogs: (limit = 100) =>
+    api<{ success: boolean; count: number; logs: Array<Record<string, unknown>> }>(`/api/internal/audit-logs?limit=${limit}`, {
+      withAuth: true,
+    }),
+
+  getAdminSummary: () =>
+    api<{
+      success: boolean;
+      summary: {
+        totalUsers: number;
+        totalProviders: number;
+        pendingDisputes: number;
+        pendingIdReviews: number;
+        suspendedUsers: number;
+        verifiedProviders: number;
+        auditLogCount: number;
+      };
+      recentAuditLogs: Array<Record<string, unknown>>;
+    }>("/api/internal/admin-summary", { withAuth: true }),
 };

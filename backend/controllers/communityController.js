@@ -1,6 +1,85 @@
-const { getSupabaseAdminClient } = require("../config/supabaseClient");
+const { getSupabaseAdminClient, hasSupabaseConfig, hasServiceRole } = require("../config/supabaseClient");
 
 const COMMUNITY_BUCKET = process.env.SUPABASE_COMMUNITY_BUCKET || "community-posts";
+
+const useDb = () => hasSupabaseConfig() && hasServiceRole();
+
+// In-Memory Fallback Store for Offline Development and Testing
+const memoryPosts = [
+  {
+    id: "post-1",
+    author_id: "550e8400-e29b-41d4-a716-446655440002", // Test Provider
+    post_type: "sell",
+    title: "Heavy-Duty HP Gas Cylinder (14.2kg) - Barely Used",
+    content: "Upgraded my household kitchen system and have an extra fully certified HP Gas cylinder. Checked for safety, seal is intact. Perfect for anyone starting a new connection.",
+    location: "Mumbai East",
+    urgency: "medium",
+    inventory: {
+      productName: "HP Gas Cylinder 14.2kg",
+      price: 950,
+      transactionStatus: "available",
+      buyerId: null
+    },
+    helpful_count: 5,
+    comment_count: 2,
+    status: "active",
+    created_at: new Date(Date.now() - 3600000).toISOString()
+  },
+  {
+    id: "post-2",
+    author_id: "550e8400-e29b-41d4-a716-446655440001", // Test Consumer
+    post_type: "sell",
+    title: "Premium Brass Gas Regulator with Flow Indicator",
+    content: "Selling an original, certified brass regulator with high precision pressure dial indicator. Ensures maximum safety against leakage. Used for only 2 months.",
+    location: "Pune Sector 4",
+    urgency: "low",
+    inventory: {
+      productName: "Brass Regulator with Flow Indicator",
+      price: 320,
+      transactionStatus: "available",
+      buyerId: null
+    },
+    helpful_count: 3,
+    comment_count: 1,
+    status: "active",
+    created_at: new Date(Date.now() - 7200000).toISOString()
+  },
+  {
+    id: "post-3",
+    author_id: "550e8400-e29b-41d4-a716-446655440003", // Test Admin
+    post_type: "emergency",
+    title: "Urgent Safety Alert: Low Quality Regulators Detected in Sector 5",
+    content: "Safety auditors have flagged multiple fake brass regulators distributed by unverified sellers. Please verify the ISI certification mark on your regulators immediately.",
+    location: "Sector 5 Plaza",
+    urgency: "high",
+    inventory: {},
+    helpful_count: 24,
+    comment_count: 4,
+    status: "active",
+    created_at: new Date(Date.now() - 10800000).toISOString()
+  }
+];
+
+const memoryComments = [
+  {
+    id: "comment-1",
+    post_id: "post-1",
+    author_id: "550e8400-e29b-41d4-a716-446655440001",
+    parent_comment_id: null,
+    content: "Is this cylinder still available? I can pay via UPI immediately.",
+    like_count: 2,
+    created_at: new Date(Date.now() - 1800000).toISOString()
+  },
+  {
+    id: "comment-2",
+    post_id: "post-1",
+    author_id: "550e8400-e29b-41d4-a716-446655440002",
+    parent_comment_id: "comment-1",
+    content: "Yes it is! You can click the Buy button to make the mock secure payment.",
+    like_count: 1,
+    created_at: new Date(Date.now() - 900000).toISOString()
+  }
+];
 
 const sanitizeFolderName = (value) => {
   const normalized = String(value || "")
@@ -165,7 +244,7 @@ const mapAuthor = (user) => ({
   id: user.id,
   name: user.name || "Unknown user",
   role: user.role || "consumer",
-  verified: Boolean(user.is_verified),
+  verified: Boolean(user.is_verified || user.isEmailVerified),
 });
 
 const normalizePostType = (value) => {
@@ -177,9 +256,24 @@ const normalizePostType = (value) => {
 const enrichPosts = async (posts) => {
   const supabase = getSupabaseAdminClient();
   const authorIds = [...new Set(posts.map((post) => post.author_id).filter(Boolean))];
-  const { data: users } = authorIds.length
-    ? await supabase.from("users").select("id,name,role,is_verified").in("id", authorIds)
-    : { data: [] };
+  
+  let users = [];
+  if (useDb()) {
+    try {
+      const { data } = await supabase.from("users").select("id,name,role,is_verified").in("id", authorIds);
+      users = data || [];
+    } catch (e) {
+      console.warn("Supabase enrich error, falling back to tempUserStore", e.message);
+    }
+  }
+  
+  if (!users.length) {
+    const { findUserById } = require("../models/tempUserStore");
+    users = authorIds.map(id => {
+      const u = findUserById(id);
+      return u ? { id: u.id, name: u.name, role: u.role, is_verified: u.isEmailVerified } : null;
+    }).filter(Boolean);
+  }
 
   const usersById = new Map((users || []).map((user) => [user.id, user]));
 
@@ -194,7 +288,7 @@ const enrichPosts = async (posts) => {
     helpfulCount: post.helpful_count || 0,
     commentCount: post.comment_count || 0,
     status: post.status,
-    createdAt: post.created_at,
+    createdAt: post.created_at || post.createdAt,
     ...getImageMeta(post),
     author: mapAuthor(usersById.get(post.author_id) || { id: post.author_id }),
   }));
@@ -202,6 +296,12 @@ const enrichPosts = async (posts) => {
 
 const listPosts = async (req, res, next) => {
   try {
+    if (!useDb()) {
+      const activePosts = memoryPosts.filter(p => p.status === "active");
+      const enriched = await enrichPosts(activePosts);
+      return res.status(200).json({ success: true, posts: enriched });
+    }
+
     const supabase = getSupabaseAdminClient();
     const { data, error } = await supabase
       .from("community_posts")
@@ -223,9 +323,59 @@ const listPosts = async (req, res, next) => {
 
 const getPost = async (req, res, next) => {
   try {
-    const supabase = getSupabaseAdminClient();
     const { id } = req.params;
 
+    if (!useDb()) {
+      const post = memoryPosts.find(p => p.id === id);
+      if (!post) {
+        res.status(404);
+        throw new Error("Post not found");
+      }
+
+      const [mappedPost] = await enrichPosts([post]);
+      const comments = memoryComments.filter(c => c.post_id === id);
+
+      const authorIds = [...new Set((comments || []).map((comment) => comment.author_id).filter(Boolean))];
+      const { findUserById } = require("../models/tempUserStore");
+      const users = authorIds.map(uid => {
+        const u = findUserById(uid);
+        return u ? { id: u.id, name: u.name, role: u.role, is_verified: u.isEmailVerified } : null;
+      }).filter(Boolean);
+      const usersById = new Map(users.map((user) => [user.id, user]));
+
+      const commentMap = new Map();
+      const roots = [];
+
+      for (const comment of comments || []) {
+        const mapped = {
+          id: comment.id,
+          content: comment.content,
+          likeCount: comment.like_count || 0,
+          createdAt: comment.created_at,
+          parentCommentId: comment.parent_comment_id,
+          author: mapAuthor(usersById.get(comment.author_id) || { id: comment.author_id }),
+          replies: [],
+        };
+        commentMap.set(comment.id, mapped);
+        if (!comment.parent_comment_id) {
+          roots.push(mapped);
+        }
+      }
+
+      for (const comment of comments || []) {
+        if (comment.parent_comment_id && commentMap.has(comment.parent_comment_id)) {
+          commentMap.get(comment.parent_comment_id).replies.push(commentMap.get(comment.id));
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        post: mappedPost,
+        comments: roots,
+      });
+    }
+
+    const supabase = getSupabaseAdminClient();
     const { data: post, error } = await supabase
       .from("community_posts")
       .select("*")
@@ -293,7 +443,6 @@ const getPost = async (req, res, next) => {
 
 const createPost = async (req, res, next) => {
   try {
-    const supabase = getSupabaseAdminClient();
     const { postType, title, content, location, urgency, inventory, imageDataUrl } = req.body || {};
 
     if (!title || !content) {
@@ -302,6 +451,31 @@ const createPost = async (req, res, next) => {
     }
 
     const normalizedType = normalizePostType(postType);
+
+    if (!useDb()) {
+      const newPost = {
+        id: "post-" + Date.now(),
+        author_id: req.user.id,
+        post_type: normalizedType,
+        title,
+        content,
+        location: location || "",
+        urgency: urgency || "medium",
+        inventory: {
+          ...normalizeInventory(inventory),
+          imageUrl: imageDataUrl || null,
+        },
+        helpful_count: 0,
+        comment_count: 0,
+        status: "active",
+        created_at: new Date().toISOString()
+      };
+      memoryPosts.unshift(newPost);
+      const [enriched] = await enrichPosts([newPost]);
+      return res.status(201).json({ success: true, post: enriched });
+    }
+
+    const supabase = getSupabaseAdminClient();
     let uploadedImage = null;
 
     try {
@@ -340,7 +514,6 @@ const createPost = async (req, res, next) => {
       if (uploadedImage?.imagePath) {
         await removeCommunityImage(supabase, uploadedImage.imagePath);
       }
-
       throw error;
     }
   } catch (error) {
@@ -350,9 +523,31 @@ const createPost = async (req, res, next) => {
 
 const deletePost = async (req, res, next) => {
   try {
-    const supabase = getSupabaseAdminClient();
     const { id } = req.params;
+    const requesterRole = String(req.user?.role || "").toLowerCase();
 
+    if (!useDb()) {
+      const index = memoryPosts.findIndex(p => p.id === id);
+      if (index === -1) {
+        res.status(404);
+        throw new Error("Post not found");
+      }
+
+      const post = memoryPosts[index];
+      const canDelete =
+        String(post.author_id) === String(req.user?.id) ||
+        ["admin", "volunteer_inspector"].includes(requesterRole);
+
+      if (!canDelete) {
+        res.status(403);
+        throw new Error("Not allowed to delete this post");
+      }
+
+      memoryPosts.splice(index, 1);
+      return res.status(200).json({ success: true, deletedId: id });
+    }
+
+    const supabase = getSupabaseAdminClient();
     const { data: post, error } = await supabase
       .from("community_posts")
       .select("*")
@@ -364,7 +559,6 @@ const deletePost = async (req, res, next) => {
       throw new Error("Post not found");
     }
 
-    const requesterRole = String(req.user?.role || "").toLowerCase();
     const canDelete =
       String(post.author_id) === String(req.user?.id) ||
       ["admin", "volunteer_inspector"].includes(requesterRole);
@@ -393,7 +587,6 @@ const deletePost = async (req, res, next) => {
 
 const addComment = async (req, res, next) => {
   try {
-    const supabase = getSupabaseAdminClient();
     const { id } = req.params;
     const { content, parentCommentId } = req.body || {};
 
@@ -402,6 +595,30 @@ const addComment = async (req, res, next) => {
       throw new Error("content is required");
     }
 
+    if (!useDb()) {
+      const post = memoryPosts.find(p => p.id === id);
+      if (!post) {
+        res.status(404);
+        throw new Error("Post not found");
+      }
+
+      const newComment = {
+        id: "comment-" + Date.now(),
+        post_id: id,
+        author_id: req.user.id,
+        parent_comment_id: parentCommentId || null,
+        content,
+        like_count: 0,
+        created_at: new Date().toISOString()
+      };
+
+      memoryComments.push(newComment);
+      post.comment_count = (post.comment_count || 0) + 1;
+
+      return res.status(201).json({ success: true, comment: newComment });
+    }
+
+    const supabase = getSupabaseAdminClient();
     const { data, error } = await supabase
       .from("community_comments")
       .insert([
@@ -437,10 +654,156 @@ const addComment = async (req, res, next) => {
   }
 };
 
+const likePost = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!useDb()) {
+      const post = memoryPosts.find(p => p.id === id);
+      if (!post) {
+        res.status(404);
+        throw new Error("Post not found");
+      }
+      post.helpful_count = (post.helpful_count || 0) + 1;
+      return res.status(200).json({ success: true, helpfulCount: post.helpful_count });
+    }
+
+    const supabase = getSupabaseAdminClient();
+    const { data: post, error } = await supabase
+      .from("community_posts")
+      .select("helpful_count")
+      .eq("id", id)
+      .single();
+
+    if (error || !post) {
+      res.status(404);
+      throw new Error("Post not found");
+    }
+
+    const nextCount = Number(post.helpful_count || 0) + 1;
+
+    const { error: updateError } = await supabase
+      .from("community_posts")
+      .update({ helpful_count: nextCount })
+      .eq("id", id);
+
+    if (updateError) {
+      res.status(400);
+      throw new Error(updateError.message);
+    }
+
+    return res.status(200).json({ success: true, helpfulCount: nextCount });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const buyPost = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const buyerId = req.user.id;
+
+    if (!useDb()) {
+      const post = memoryPosts.find(p => p.id === id);
+      if (!post) {
+        res.status(404);
+        throw new Error("Post not found");
+      }
+
+      const inventory = post.inventory || {};
+      if (inventory.transactionStatus === "sold") {
+        res.status(400);
+        throw new Error("Product already sold");
+      }
+
+      inventory.transactionStatus = "sold";
+      inventory.buyerId = buyerId;
+      inventory.purchasedAt = new Date().toISOString();
+
+      // Now, increase trust score of author by 10 points!
+      const authorId = post.author_id;
+      const { applyTrustOverride, getUserTrustSnapshot } = require("../services/trustService");
+
+      const trustSnapshot = await getUserTrustSnapshot(authorId);
+      if (trustSnapshot) {
+        const currentScore = Number(trustSnapshot.trustScore || 0);
+        const nextScore = Math.min(100, currentScore + 10);
+        await applyTrustOverride({
+          userId: authorId,
+          trustScore: nextScore,
+          reason: `Sold product ${post.title} on community marketplace (+10)`
+        });
+      }
+
+      const [enriched] = await enrichPosts([post]);
+      return res.status(200).json({ success: true, post: enriched });
+    }
+
+    const supabase = getSupabaseAdminClient();
+    const { data: post, error } = await supabase
+      .from("community_posts")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !post) {
+      res.status(404);
+      throw new Error("Post not found");
+    }
+
+    const inventory = post.inventory || {};
+    if (inventory.transactionStatus === "sold") {
+      res.status(400);
+      throw new Error("Product already sold");
+    }
+
+    const updatedInventory = {
+      ...inventory,
+      transactionStatus: "sold",
+      buyerId: buyerId,
+      purchasedAt: new Date().toISOString()
+    };
+
+    const { data: updatedPost, error: updateError } = await supabase
+      .from("community_posts")
+      .update({ inventory: updatedInventory })
+      .eq("id", id)
+      .select("*")
+      .single();
+
+    if (updateError) {
+      res.status(400);
+      throw new Error(updateError.message);
+    }
+
+    // Now, increase trust score of author by 10 points!
+    const authorId = post.author_id;
+    const { applyTrustOverride, getUserTrustSnapshot } = require("../services/trustService");
+
+    const trustSnapshot = await getUserTrustSnapshot(authorId);
+    if (trustSnapshot) {
+      const currentScore = Number(trustSnapshot.trustScore || 0);
+      const nextScore = Math.min(100, currentScore + 10);
+      await applyTrustOverride({
+        userId: authorId,
+        trustScore: nextScore,
+        reason: `Sold product ${post.title} on community marketplace (+10)`
+      });
+    }
+
+    const [enriched] = await enrichPosts([updatedPost]);
+    return res.status(200).json({ success: true, post: enriched });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   listPosts,
   getPost,
   createPost,
   deletePost,
   addComment,
+  likePost,
+  buyPost,
 };

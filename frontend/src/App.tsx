@@ -4,15 +4,11 @@ import RefillBooking from '@/pages/RefillBooking';
 import Emergency from '@/pages/Emergency';
 import EmergencyAssessment from '@/pages/EmergencyAssessment';
 import Tracking from '@/pages/Tracking';
-import MechanicPanel from '@/pages/MechanicPanel';
 import Payment from '@/pages/Payment';
 import ResourceSharing from '@/pages/ResourceSharing';
 import AdminPanel from '@/pages/AdminPanel';
-import AdminHome from '@/pages/admin/Home';
-import AdminProfile from '@/pages/admin/Profile';
-import IdReviewQueue from '@/pages/admin/IdReviewQueue';
-import TrustOverride from '@/pages/admin/TrustOverride';
-import Suspensions from '@/pages/admin/Suspensions';
+import AdminRouter from '@/admin-app/AdminRouter';
+import { AdminProtectedRoute } from '@/admin-app/components/AdminProtectedRoute';
 import UserHome from '@/pages/user/Home';
 import ConsumerHome from '@/pages/consumer/Home';
 import RegisterCylinder from '@/pages/RegisterCylinder';
@@ -31,7 +27,14 @@ import NearbyProviders from '@/pages/trust/NearbyProviders';
 import RaiseDispute from '@/pages/trust/RaiseDispute';
 import Disputes from '@/pages/trust/Disputes';
 import DisputeDetails from '@/pages/trust/DisputeDetails';
-import AdminDisputes from '@/pages/trust/AdminDisputes';
+
+// Provider Workspace imports
+import ProviderHome from '@/pages/provider/ProviderHome';
+import ProviderInitiatives from '@/pages/provider/Initiatives';
+import ProviderOrders from '@/pages/provider/Orders';
+import ProviderRequests from '@/pages/provider/Requests';
+import ProviderAnalytics from '@/pages/provider/Analytics';
+import ProviderProfile from '@/pages/provider/Profile';
 
 import { AIChatbot } from './components/AIChatbot';
 import { AuthRoute } from './components/trust/AuthRoute';
@@ -66,16 +69,26 @@ function App() {
         <Route path="/login" element={<PublicOnlyRoute><TrustLogin /></PublicOnlyRoute>} />
         <Route path="/auth/otp-verify" element={<PublicOnlyRoute><OTPVerify /></PublicOnlyRoute>} />
 
-        {/* Role Route guards */}
-        <Route path="/admin" element={<RoleRoute role="admin"><AdminHome /></RoleRoute>} />
+        {/* Admin Modern Portal */}
+        <Route 
+          path="/admin/*" 
+          element={
+            <AdminProtectedRoute>
+              <AdminRouter />
+            </AdminProtectedRoute>
+          } 
+        />
         <Route path="/admin/legacy" element={<RoleRoute role="admin"><AdminPanel /></RoleRoute>} />
-        <Route path="/admin/profile" element={<RoleRoute role="admin"><AdminProfile /></RoleRoute>} />
-        <Route path="/admin/id-review-queue" element={<RoleRoute role="admin"><IdReviewQueue /></RoleRoute>} />
-        <Route path="/admin/trust-override" element={<RoleRoute role="admin"><TrustOverride /></RoleRoute>} />
-        <Route path="/admin/suspensions" element={<RoleRoute role="admin"><Suspensions /></RoleRoute>} />
-        <Route path="/admin/disputes" element={<RoleRoute role="admin"><AdminDisputes /></RoleRoute>} />
         
-        <Route path="/mechanic" element={<RoleRoute role="provider"><MechanicPanel /></RoleRoute>} />
+        <Route path="/mechanic" element={<Navigate to="/provider/home" replace />} />
+        <Route path="/provider/home" element={<RoleRoute role="provider"><ProviderHome /></RoleRoute>} />
+        <Route path="/provider/initiatives" element={<RoleRoute role="provider"><ProviderInitiatives /></RoleRoute>} />
+        <Route path="/provider/orders" element={<RoleRoute role="provider"><ProviderOrders /></RoleRoute>} />
+        <Route path="/provider/requests" element={<RoleRoute role="provider"><ProviderRequests /></RoleRoute>} />
+        <Route path="/provider/analytics" element={<RoleRoute role="provider"><ProviderAnalytics /></RoleRoute>} />
+        <Route path="/provider/profile" element={<RoleRoute role="provider"><ProviderProfile /></RoleRoute>} />
+        <Route path="/provider/community" element={<RoleRoute role="provider"><Community /></RoleRoute>} />
+        <Route path="/provider/community/create" element={<RoleRoute role="provider"><CreatePost /></RoleRoute>} />
         <Route path="/consumer" element={<RoleRoute role="consumer"><ConsumerHome /></RoleRoute>} />
 
         {/* Session Auth Route guards */}

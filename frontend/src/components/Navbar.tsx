@@ -1,11 +1,11 @@
-﻿import { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getStoredUser, clearToken, clearStoredUser } from '@/lib/trustAuth';
 import { useTheme } from '@/context/ThemeContext';
 
 const getAccessRoute = (role: string | null) => {
   if (role === 'admin') return '/admin';
-  if (role === 'provider') return '/mechanic';
+  if (role === 'provider') return '/provider/home';
   if (role === 'consumer' || role === 'household') return '/consumer';
   if (role === 'user') return '/user';
   return null;
@@ -13,7 +13,7 @@ const getAccessRoute = (role: string | null) => {
 
 const getRoleLabel = (role: string | null) => {
   if (role === 'admin') return 'Admin Workspace';
-  if (role === 'provider') return 'Mechanic Panel';
+  if (role === 'provider') return 'Provider Panel';
   if (role === 'consumer' || role === 'household') return 'Consumer Workspace';
   if (role === 'user') return 'User Workspace';
   return 'Dashboard';

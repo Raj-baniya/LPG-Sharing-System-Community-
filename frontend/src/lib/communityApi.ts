@@ -40,4 +40,18 @@ export const communityApi = {
         body: JSON.stringify(payload),
       })
     ),
+  likePost: async (id: string) =>
+    parse(
+      await fetch(`${API_ROOT}/community/posts/${id}/like`, {
+        method: "POST",
+        headers: authHeaders(),
+      })
+    ),
+  buyPost: async (id: string) =>
+    parse(
+      await fetch(`${API_ROOT}/community/posts/${id}/buy`, {
+        method: "POST",
+        headers: authHeaders(),
+      })
+    ),
 };

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { MapPin } from 'lucide-react';
@@ -9,6 +9,7 @@ export default function MechanicPanel() {
   const [requests, setRequests] = useState<any[]>([]);
   const [error, setError] = useState('');
   const { theme, toggleTheme } = useTheme();
+  const [acceptedIds, setAcceptedIds] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const run = async () => {
@@ -22,10 +23,18 @@ export default function MechanicPanel() {
     run();
   }, []);
 
+  const handleAccept = (id: string) => {
+    setAcceptedIds(prev => ({ ...prev, [id]: true }));
+  };
+
+  const handleReject = (id: string) => {
+    setRequests(prev => prev.filter(r => r.id !== id));
+  };
+
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] p-6 md:p-12 transition-colors">
       <div className="mb-8 flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-light">Mechanic Panel</h1>
+        <h1 className="text-3xl font-light">Provider Panel</h1>
         <button
           onClick={toggleTheme}
           className="p-2 rounded-lg bg-white/10 hover:bg-white/20 border border-[var(--glass-border)] text-[var(--text-primary)] transition-all"
@@ -45,7 +54,9 @@ export default function MechanicPanel() {
             <CardHeader>
               <div className="flex justify-between items-start">
                 <CardTitle className="text-xl">Emergency #{request.id.slice(0, 8)}</CardTitle>
-                <span className="text-red-400 text-sm font-medium">{request.status}</span>
+                <span className={`text-sm font-medium ${acceptedIds[request.id] ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {acceptedIds[request.id] ? 'assigned' : request.status}
+                </span>
               </div>
             </CardHeader>
             <CardContent>
@@ -57,8 +68,22 @@ export default function MechanicPanel() {
                 {request.intensity || '-'} · {request.leakage_sound || '-'} · {request.duration || '-'}
               </div>
               <div className="flex gap-4">
-                <Button className="flex-1 text-black font-medium text-sm">Accept Job</Button>
-                <Button variant="outline" className="flex-1 text-sm">Reject</Button>
+                <Button 
+                  onClick={() => handleAccept(request.id)}
+                  disabled={acceptedIds[request.id]}
+                  className={`flex-1 text-black font-medium text-sm transition-all ${
+                    acceptedIds[request.id] ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-white'
+                  }`}
+                >
+                  {acceptedIds[request.id] ? 'Accepted ✅' : 'Accept Job'}
+                </Button>
+                <Button 
+                  onClick={() => handleReject(request.id)}
+                  variant="outline" 
+                  className="flex-1 text-sm text-red-400 border-red-500/20 hover:bg-red-500/10"
+                >
+                  Reject
+                </Button>
               </div>
             </CardContent>
           </Card>

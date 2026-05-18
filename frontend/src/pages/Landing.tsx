@@ -1,5 +1,5 @@
-﻿import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Siren } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 import { AnimatedHeading } from '../components/AnimatedHeading';
@@ -51,6 +51,7 @@ const qnaItems = [
 ];
 
 export default function Landing() {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState<LandingPost[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [postError, setPostError] = useState('');
@@ -140,17 +141,19 @@ export default function Landing() {
               </FadeIn>
 
               <FadeIn delayMs={1200} durationMs={1000} className="flex flex-wrap gap-4 items-center">
-                <Link to="/emergency/assessment">
-                  <button className="bg-white text-black px-8 py-3 rounded-lg font-medium animate-pulse-red relative z-10 transition-transform active:scale-95 flex items-center gap-2">
-                    <Siren className="w-5 h-5 text-black" />
-                    Raise Emergency
-                  </button>
-                </Link>
-                <Link to="/community">
-                  <button className="liquid-glass border border-white/20 text-white px-8 py-3 rounded-lg font-medium hover:bg-white hover:text-black transition-all">
-                    Explore Platform
-                  </button>
-                </Link>
+                <button 
+                  onClick={() => navigate('/emergency/assessment')}
+                  className="bg-white text-black px-8 py-3 rounded-lg font-medium animate-pulse-red relative z-10 transition-transform active:scale-95 flex items-center gap-2"
+                >
+                  <Siren className="w-5 h-5 text-black" />
+                  Raise Emergency
+                </button>
+                <button 
+                  onClick={() => navigate('/community')}
+                  className="liquid-glass border border-white/20 text-white px-8 py-3 rounded-lg font-medium hover:bg-white hover:text-black transition-all"
+                >
+                  Explore Platform
+                </button>
               </FadeIn>
             </div>
 

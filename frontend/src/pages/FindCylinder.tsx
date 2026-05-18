@@ -7,10 +7,28 @@ import { mockMarkers } from '@/lib/mockData';
 export default function FindCylinder() {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterMode, setFilterMode] = useState<'all' | 'verified'>('all');
   const navigate = useNavigate();
 
-  // Filter only cylinder markers
-  const cylinderMarkers = mockMarkers.filter(m => m.type === 'cylinder');
+  // Filter cylinder markers dynamically
+  const cylinderMarkers = mockMarkers.filter(m => {
+    if (m.type !== 'cylinder') return false;
+    
+    // Filter by verification status (simulated by stock > 60%)
+    if (filterMode === 'verified' && (m.stock || 0) < 60) {
+      return false;
+    }
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      const nameMatch = m.ownerName?.toLowerCase().includes(query);
+      const priceMatch = m.price?.toLowerCase().includes(query);
+      if (!nameMatch && !priceMatch) return false;
+    }
+    
+    return true;
+  });
 
   return (
     <div className="h-screen w-full bg-surface text-on-surface flex flex-col font-body overflow-hidden selection:bg-white selection:text-black">
@@ -52,7 +70,15 @@ export default function FindCylinder() {
               <span className="material-symbols-outlined !text-sm">map</span> Map
             </button>
           </div>
-          <button className="p-2 hover:bg-white/10 rounded-md transition-all text-on-surface-variant flex items-center justify-center border border-white/5 ml-2">
+          <button 
+            onClick={() => setFilterMode(prev => prev === 'all' ? 'verified' : 'all')}
+            className={`p-2 rounded-md transition-all flex items-center justify-center border ml-2 ${
+              filterMode === 'verified' 
+                ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300' 
+                : 'hover:bg-white/10 text-on-surface-variant border-white/5'
+            }`}
+            title={filterMode === 'verified' ? 'Showing Verified Only' : 'Show All'}
+          >
             <span className="material-symbols-outlined !text-xl">filter_list</span>
           </button>
         </div>
@@ -115,7 +141,12 @@ export default function FindCylinder() {
                                <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-black mb-1">Stock</p>
                                <p className="text-sm font-bold text-white">{c.stock ? `In Stock (${c.stock}%)` : 'In Stock'}</p>
                              </div>
-                             <button className="bg-white text-black px-5 py-2 rounded font-black text-xs hover:bg-[#C9C6C0] active:scale-95 transition-all">Request</button>
+                             <button 
+                               onClick={() => navigate(`/booking/${c.id}`)}
+                               className="bg-white text-black px-5 py-2 rounded font-black text-xs hover:bg-[#C9C6C0] active:scale-95 transition-all"
+                             >
+                               Request
+                             </button>
                            </div>
                          </div>
                        </motion.div>
