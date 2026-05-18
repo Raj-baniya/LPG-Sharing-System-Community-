@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LPGTracker } from '../components/LPGTracker';
 import { LPGAlertNotification } from '../components/LPGAlertNotification';
-import { TrendingUp, CheckCircle, AlertTriangle } from 'lucide-react';
+import { TrendingUp, CheckCircle, AlertTriangle, Cpu } from 'lucide-react';
 import { getToken } from '@/lib/trustAuth';
 import { API_ROOT } from '@/lib/apiBase';
 
@@ -52,163 +52,180 @@ export const LPGPredictionPage: React.FC = () => {
   }, [API_BASE, token]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
+    <div className="min-h-screen bg-[#0e0e0e] text-white font-sans selection:bg-neutral-800 selection:text-white pb-16">
       {/* Alert Notification Bell */}
       <LPGAlertNotification token={token || ''} apiBase={API_BASE} pollInterval={60000} />
 
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-8 px-6">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold mb-2">LPG Prediction System</h1>
-          <p className="text-blue-100">Monitor your LPG usage and predict when your cylinder will be empty</p>
+      {/* Modern Lumina Noir Header */}
+      <div className="border-b border-white/5 bg-white/[0.01] py-10 px-6 md:px-8 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-black">
+                Predictive AI Engine
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white flex items-center gap-3">
+              LPG Prediction System
+            </h1>
+            <p className="text-sm text-neutral-400 mt-2">
+              Deep usage learning & intelligent low-stock alerts before your cylinder runs dry.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl px-4 py-3">
+            <Cpu className="w-5 h-5 text-emerald-400 animate-pulse" />
+            <div className="text-left">
+              <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-black">Model Status</p>
+              <p className="text-xs font-bold text-emerald-400">Online & Optimized</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-10 md:px-8">
         {/* Model Performance Metrics */}
         {!loadingMetrics && metrics && (
-          <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="mb-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
             {/* Total Predictions */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md hover:border-white/20 transition-all">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm font-medium">Total Predictions</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                  <p className="text-neutral-400 text-xs font-black uppercase tracking-widest">Total Predictions</p>
+                  <p className="text-3xl font-black text-white mt-3">
                     {metrics.totalPredictions}
                   </p>
                 </div>
-                <div className="bg-blue-100 p-3 rounded-full">
-                  <TrendingUp className="w-6 h-6 text-blue-600" />
+                <div className="bg-blue-500/10 p-3 rounded-xl border border-blue-500/20 text-blue-400">
+                  <TrendingUp className="w-6 h-6" />
                 </div>
               </div>
             </div>
 
             {/* Accurate Predictions */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md hover:border-white/20 transition-all">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm font-medium">Accurate Predictions</p>
-                  <p className="text-3xl font-bold text-green-600 mt-2">
+                  <p className="text-neutral-400 text-xs font-black uppercase tracking-widest">Accurate Runs</p>
+                  <p className="text-3xl font-black text-emerald-400 mt-3">
                     {metrics.accuratePredictions}
                   </p>
                 </div>
-                <div className="bg-green-100 p-3 rounded-full">
-                  <CheckCircle className="w-6 h-6 text-green-600" />
+                <div className="bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 text-emerald-400">
+                  <CheckCircle className="w-6 h-6" />
                 </div>
               </div>
             </div>
 
             {/* Accuracy Percentage */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md hover:border-white/20 transition-all">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm font-medium">Accuracy Rate</p>
-                  <p className="text-3xl font-bold text-indigo-600 mt-2">
+                  <p className="text-neutral-400 text-xs font-black uppercase tracking-widest">Accuracy Rate</p>
+                  <p className="text-3xl font-black text-violet-400 mt-3">
                     {metrics.accuracy_percentage}%
                   </p>
                 </div>
-                <div className="bg-indigo-100 p-3 rounded-full">
-                  <CheckCircle className="w-6 h-6 text-indigo-600" />
+                <div className="bg-violet-500/10 p-3 rounded-xl border border-violet-500/20 text-violet-400">
+                  <CheckCircle className="w-6 h-6" />
                 </div>
               </div>
             </div>
 
             {/* Average Error */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md hover:border-white/20 transition-all">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm font-medium">Avg Error (Days)</p>
-                  <p className="text-3xl font-bold text-orange-600 mt-2">
-                    ±{metrics.average_error_days}
+                  <p className="text-neutral-400 text-xs font-black uppercase tracking-widest">Avg Error Margin</p>
+                  <p className="text-3xl font-black text-amber-500 mt-3">
+                    ±{metrics.average_error_days} Days
                   </p>
                 </div>
-                <div className="bg-orange-100 p-3 rounded-full">
-                  <AlertTriangle className="w-6 h-6 text-orange-600" />
+                <div className="bg-amber-500/10 p-3 rounded-xl border border-amber-500/20 text-amber-400">
+                  <AlertTriangle className="w-6 h-6" />
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Info Section */}
-        <div className="bg-blue-50 border-l-4 border-blue-600 rounded-lg p-6 mb-8">
-          <h2 className="text-lg font-semibold text-blue-900 mb-2">How It Works</h2>
-          <ul className="text-blue-800 space-y-2 text-sm">
+        {/* How it works banner */}
+        <div className="bg-white/[0.02] border border-white/5 border-l-4 border-l-blue-500 rounded-2xl p-6 mb-10 backdrop-blur-md">
+          <h2 className="text-lg font-bold text-white mb-3 tracking-tight">How the Prediction System Works</h2>
+          <ul className="text-neutral-400 space-y-2 text-sm leading-relaxed">
             <li className="flex items-start gap-2">
-              <span className="font-bold">1.</span>
-              <span>Add your LPG cylinders with current weight and capacity</span>
+              <span className="text-blue-400 font-black">01.</span>
+              <span><strong>Register Nodes:</strong> Add your LPG cylinders with current weight levels and capacities to the network.</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="font-bold">2.</span>
-              <span>Log your daily usage to track consumption patterns</span>
+              <span className="text-blue-400 font-black">02.</span>
+              <span><strong>Usage Logging:</strong> Log daily gas usage or let automated meters stream the usage data seamlessly.</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="font-bold">3.</span>
-              <span>Get predictions on when your cylinder will be empty</span>
+              <span className="text-blue-400 font-black">03.</span>
+              <span><strong>Predict Exhaustion:</strong> Call the ML engine to evaluate historical daily averages and output predicted empty dates.</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="font-bold">4.</span>
-              <span>Receive alerts when LPG is running low (configurable threshold)</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="font-bold">5.</span>
-              <span>Submit feedback on prediction accuracy to help improve the ML model</span>
+              <span className="text-blue-400 font-black">04.</span>
+              <span><strong>Intelligent Alerts:</strong> When empty date fall within your threshold (e.g. 7 days), low-stock warnings trigger instantly.</span>
             </li>
           </ul>
         </div>
 
-        {/* LPG Tracker Component */}
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        {/* LPG Tracker Component Wrapper */}
+        <div className="bg-white/[0.02] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
           <LPGTracker />
         </div>
 
-        {/* Model Training Info */}
-        <div className="bg-amber-50 border-l-4 border-amber-600 rounded-lg p-6 mt-8">
-          <h2 className="text-lg font-semibold text-amber-900 mb-2">🤖 Help Improve Our ML Model</h2>
-          <p className="text-amber-800 mb-3">
-            After each prediction reaches its predicted date, you can submit feedback on whether the prediction was accurate. This data helps train our machine learning model to make better predictions over time.
+        {/* Feedback Section */}
+        <div className="bg-white/[0.02] border border-white/5 border-l-4 border-l-amber-500 rounded-2xl p-6 mt-10 backdrop-blur-md">
+          <h2 className="text-lg font-bold text-white mb-2 tracking-tight flex items-center gap-2">
+            <span>🤖 Train the Neural Prediction Engine</span>
+          </h2>
+          <p className="text-neutral-400 text-sm mb-4 leading-relaxed">
+            Predictive accuracy improves with local network training. Once a cylinder runs dry, submitting its exact depletion date feeds our local machine learning model, optimizing forecast accuracy for you and your neighborhood.
           </p>
-          <div className="bg-white p-4 rounded border border-amber-300">
-            <p className="text-sm text-gray-700">
-              <strong>How to submit feedback:</strong> Go to the "Pending Feedback" section in the LPG Tracker. For each expired prediction, enter the actual empty date and any additional notes. This will automatically calculate the accuracy and help us improve the model.
+          <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl">
+            <p className="text-xs text-neutral-400 leading-5">
+              <strong className="text-amber-400 uppercase tracking-widest font-black text-[10px] block mb-1">To Submit Feedback:</strong>
+              Go to the pending feedback section inside your active cylinder dashboard. Confirm actual depletion dates to contribute to global network optimization.
             </p>
           </div>
         </div>
 
         {/* Historical Metrics Chart */}
         {historicalMetrics.length > 0 && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mt-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Model Performance History</h2>
+          <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-6 mt-10 shadow-lg">
+            <h2 className="text-xl font-bold text-white mb-5">Predictive Model Run History</h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-gray-50 border-b">
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Date</th>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700">Total</th>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700">Accurate</th>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700">Accuracy</th>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700">Avg Error</th>
+                  <tr className="border-b border-white/10">
+                    <th className="px-4 py-4 text-left text-neutral-400 font-black text-xs uppercase tracking-widest">Date Checked</th>
+                    <th className="px-4 py-4 text-center text-neutral-400 font-black text-xs uppercase tracking-widest">Total Predictions</th>
+                    <th className="px-4 py-4 text-center text-neutral-400 font-black text-xs uppercase tracking-widest">Accurate Hits</th>
+                    <th className="px-4 py-4 text-center text-neutral-400 font-black text-xs uppercase tracking-widest">Accuracy</th>
+                    <th className="px-4 py-4 text-center text-neutral-400 font-black text-xs uppercase tracking-widest">Average Error</th>
                   </tr>
                 </thead>
                 <tbody>
                   {historicalMetrics.slice(0, 10).map((metric, idx) => (
-                    <tr key={idx} className="border-b hover:bg-gray-50">
-                      <td className="px-4 py-3 text-gray-900">
-                        {new Date(metric.metric_date).toLocaleDateString()}
+                    <tr key={idx} className="border-b border-white/5 hover:bg-white/[0.01] transition-all">
+                      <td className="px-4 py-4 text-white font-medium">
+                        {new Date(metric.metric_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                       </td>
-                      <td className="px-4 py-3 text-center text-gray-700">
+                      <td className="px-4 py-4 text-center text-neutral-300 font-bold">
                         {metric.total_predictions}
                       </td>
-                      <td className="px-4 py-3 text-center text-green-600 font-semibold">
+                      <td className="px-4 py-4 text-center text-emerald-400 font-bold">
                         {metric.accurate_predictions}
                       </td>
-                      <td className="px-4 py-3 text-center">
-                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">
+                      <td className="px-4 py-4 text-center">
+                        <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase">
                           {metric.average_accuracy_percentage}%
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-center text-gray-700">
+                      <td className="px-4 py-4 text-center text-neutral-300">
                         ±{parseFloat(String(metric.average_error_days)).toFixed(2)} days
                       </td>
                     </tr>
@@ -224,3 +241,4 @@ export const LPGPredictionPage: React.FC = () => {
 };
 
 export default LPGPredictionPage;
+

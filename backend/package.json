@@ -4,8 +4,8 @@
   "description": "LPG sharing system backend",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js",
+    "dev": "PORT=5001 nodemon server.js",
+    "start": "PORT=5001 node server.js",
     "mcp:supabase": "node mcp/supabase-mcp-server.mjs"
   },
   "keywords": [],

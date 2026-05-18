@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle, Droplet, TrendingDown, Calendar, Plus } from 'lucide-react';
+import { AlertCircle, TrendingDown, Calendar, Plus } from 'lucide-react';
 import { getToken } from '@/lib/trustAuth';
 import { API_ROOT } from '@/lib/apiBase';
 
@@ -242,23 +242,25 @@ export const LPGTracker: React.FC = () => {
   };
 
   const getStatusColor = (days: number | null): string => {
-    if (!days) return 'text-gray-500';
-    if (days <= 3) return 'text-red-600';
-    if (days <= 7) return 'text-yellow-600';
-    return 'text-green-600';
+    if (!days) return 'text-neutral-500';
+    if (days <= 3) return 'text-red-400 font-black';
+    if (days <= 7) return 'text-amber-400 font-black';
+    return 'text-emerald-400 font-black';
   };
 
   const getStatusBgColor = (days: number | null): string => {
-    if (!days) return 'bg-gray-100';
-    if (days <= 3) return 'bg-red-100';
-    if (days <= 7) return 'bg-yellow-100';
-    return 'bg-green-100';
+    if (!days) return 'bg-white/5 border border-white/10';
+    if (days <= 3) return 'bg-red-500/10 border border-red-500/20';
+    if (days <= 7) return 'bg-amber-500/10 border border-amber-500/20';
+    return 'bg-emerald-500/10 border border-emerald-500/20';
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg font-semibold">Loading LPG Tracker...</div>
+      <div className="flex items-center justify-center p-12 bg-white/[0.01]">
+        <div className="text-neutral-400 text-sm font-black uppercase tracking-widest animate-pulse">
+          Loading LPG Tracker System...
+        </div>
       </div>
     );
   }
@@ -268,258 +270,284 @@ export const LPGTracker: React.FC = () => {
     : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 flex items-center gap-3">
-            <Droplet className="w-10 h-10 text-blue-600" />
-            LPG Prediction Tracker
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Monitor your LPG usage and get alerts before your cylinder runs out
-          </p>
+    <div className="p-6 md:p-8 bg-[#0a0a0a] text-white">
+      {/* Alerts Section */}
+      {errorMessage && (
+        <div className="mb-6 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3.5 text-sm font-bold text-red-200 flex items-center gap-2">
+          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+          {errorMessage}
         </div>
+      )}
 
-        {/* Alerts Section */}
-        {errorMessage && (
-          <div className="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-            {errorMessage}
-          </div>
-        )}
-
-        {alerts.length > 0 && (
-          <div className="mb-6 space-y-3">
-            {alerts.map((alert) => (
-              <div
-                key={alert.id}
-                className={`p-4 rounded-lg flex items-start gap-4 ${
-                  alert.is_read
-                    ? 'bg-gray-100 border border-gray-300'
-                    : 'bg-red-50 border border-red-300'
-                }`}
-              >
-                <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="font-semibold text-gray-900">{alert.alert_type}</p>
-                  <p className="text-gray-700 text-sm mt-1">{alert.message}</p>
-                  <p className="text-gray-500 text-xs mt-2">
-                    {new Date(alert.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                {!alert.is_read && (
-                  <button
-                    onClick={() => handleMarkAlertRead(alert.id)}
-                    className="text-sm font-medium text-blue-600 hover:text-blue-800 whitespace-nowrap"
-                  >
-                    Mark Read
-                  </button>
-                )}
+      {alerts.length > 0 && (
+        <div className="mb-8 space-y-3">
+          {alerts.map((alert) => (
+            <div
+              key={alert.id}
+              className={`p-5 rounded-2xl border flex items-start gap-4 transition-all ${
+                alert.is_read
+                  ? 'bg-white/[0.02] border-white/5 text-neutral-400'
+                  : 'bg-red-500/5 border-red-500/20 text-red-200'
+              }`}
+            >
+              <AlertCircle className={`w-6 h-6 flex-shrink-0 mt-0.5 ${alert.is_read ? 'text-neutral-500' : 'text-red-400'}`} />
+              <div className="flex-1">
+                <p className={`font-black text-xs uppercase tracking-widest ${alert.is_read ? 'text-neutral-400' : 'text-red-300'}`}>{alert.alert_type}</p>
+                <p className="text-sm mt-1.5 leading-relaxed">{alert.message}</p>
+                <p className="text-neutral-500 text-[10px] mt-2 font-black tracking-widest uppercase">
+                  {new Date(alert.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </p>
               </div>
-            ))}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Cylinders List */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">My Cylinders</h2>
+              {!alert.is_read && (
                 <button
-                  onClick={() => setShowAddForm(!showAddForm)}
-                  className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
+                  onClick={() => handleMarkAlertRead(alert.id)}
+                  className="bg-white text-black px-3 py-1.5 rounded-lg text-xs font-black hover:bg-neutral-200 transition-all"
                 >
-                  <Plus className="w-5 h-5" />
+                  Mark Read
                 </button>
-              </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
-              {showAddForm && (
-                <form onSubmit={handleAddCylinder} className="mb-4 p-4 bg-blue-50 rounded-lg">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Cylinders List */}
+        <div className="lg:col-span-1">
+          <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 md:p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-black uppercase tracking-widest text-neutral-400">Registered Nodes</h2>
+              <button
+                onClick={() => setShowAddForm(!showAddForm)}
+                className="p-2.5 bg-white text-black rounded-xl hover:bg-neutral-200 transition-all shadow-lg flex items-center justify-center"
+              >
+                <Plus className="w-5 h-5" />
+              </button>
+            </div>
+
+            {showAddForm && (
+              <form onSubmit={handleAddCylinder} className="mb-6 p-4 bg-white/[0.03] border border-white/5 rounded-xl space-y-3">
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest font-black text-neutral-500 mb-1.5">Cylinder Serial / ID</label>
                   <input
                     type="text"
-                    placeholder="Cylinder ID"
+                    placeholder="e.g. CYL-9082-Z"
                     value={formData.cylinder_id}
                     onChange={(e) =>
                       setFormData({ ...formData, cylinder_id: e.target.value })
                     }
-                    className="w-full mb-3 px-3 py-2 border rounded-lg bg-white text-gray-900 placeholder:text-gray-500"
+                    className="w-full px-4 py-2.5 border border-white/10 rounded-xl bg-[#0e0e0e] text-white placeholder:text-neutral-600 text-sm focus:border-white/20 outline-none transition-all"
                     required
                   />
-                  <input
-                    type="number"
-                    placeholder="Current Weight (kg)"
-                    step="0.1"
-                    value={formData.current_weight_kg}
-                    onChange={(e) =>
-                      setFormData({ ...formData, current_weight_kg: e.target.value })
-                    }
-                    className="w-full mb-3 px-3 py-2 border rounded-lg bg-white text-gray-900 placeholder:text-gray-500"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-                  >
-                    Add Cylinder
-                  </button>
-                </form>
-              )}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-black text-neutral-500 mb-1.5">Weight (kg)</label>
+                    <input
+                      type="number"
+                      placeholder="3.5"
+                      step="0.1"
+                      value={formData.current_weight_kg}
+                      onChange={(e) =>
+                        setFormData({ ...formData, current_weight_kg: e.target.value })
+                      }
+                      className="w-full px-4 py-2.5 border border-white/10 rounded-xl bg-[#0e0e0e] text-white placeholder:text-neutral-600 text-sm focus:border-white/20 outline-none transition-all"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-black text-neutral-500 mb-1.5">Capacity (kg)</label>
+                    <input
+                      type="number"
+                      placeholder="20"
+                      value={formData.max_capacity_kg}
+                      onChange={(e) =>
+                        setFormData({ ...formData, max_capacity_kg: e.target.value })
+                      }
+                      className="w-full px-4 py-2.5 border border-white/10 rounded-xl bg-[#0e0e0e] text-white placeholder:text-neutral-600 text-sm focus:border-white/20 outline-none transition-all"
+                      required
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-white text-black py-2.5 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all"
+                >
+                  Register Node
+                </button>
+              </form>
+            )}
 
-              <div className="space-y-2">
-                {cylinders.map((cylinder) => (
+            <div className="space-y-2">
+              {cylinders.length === 0 ? (
+                <div className="text-center py-6 text-neutral-500 text-xs font-medium">
+                  No cylinders active. Click "+" to register one.
+                </div>
+              ) : (
+                cylinders.map((cylinder) => (
                   <button
                     key={cylinder.id}
                     onClick={() => {
                       setSelectedCylinder(cylinder);
                       fetchPredictions(cylinder.id);
                     }}
-                    className={`w-full text-left p-3 rounded-lg transition ${
+                    className={`w-full text-left p-4 rounded-xl border transition-all ${
                       selectedCylinder?.id === cylinder.id
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 hover:bg-gray-200'
+                        ? 'bg-white border-white text-black shadow-lg shadow-white/5'
+                        : 'bg-white/[0.01] border-white/5 text-white hover:bg-white/[0.04]'
                     }`}
                   >
-                    <p className="font-semibold">{cylinder.cylinder_id}</p>
-                    <p className="text-sm opacity-75">
-                      {cylinder.current_weight_kg} / {cylinder.max_capacity_kg} kg
+                    <p className="font-black text-sm tracking-tight">{cylinder.cylinder_id}</p>
+                    <p className={`text-[10px] font-black tracking-widest uppercase mt-1 ${
+                      selectedCylinder?.id === cylinder.id ? 'text-neutral-700' : 'text-neutral-500'
+                    }`}>
+                      Level: {cylinder.current_weight_kg} / {cylinder.max_capacity_kg} kg
                     </p>
                   </button>
-                ))}
-              </div>
+                ))
+              )}
             </div>
           </div>
+        </div>
 
-          {/* Main Prediction Panel */}
-          <div className="lg:col-span-2 space-y-6">
-            {selectedCylinder && (
-              <>
-                {/* Current Status */}
-                <div className="bg-white rounded-lg shadow-lg p-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        {/* Main Prediction Panel */}
+        <div className="lg:col-span-2 space-y-6">
+          {selectedCylinder ? (
+            <>
+              {/* Current Status */}
+              <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-black tracking-tight text-white">
                     {selectedCylinder.cylinder_id}
                   </h2>
-
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-600 mb-1">Current Weight</p>
-                      <p className="text-3xl font-bold text-blue-600">
-                        {selectedCylinder.current_weight_kg} kg
-                      </p>
-                    </div>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-600 mb-1">Capacity</p>
-                      <p className="text-3xl font-bold text-gray-600">
-                        {selectedCylinder.max_capacity_kg} kg
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="mb-6">
-                    <div className="w-full bg-gray-200 rounded-full h-4">
-                      <div
-                        className="bg-gradient-to-r from-green-500 to-green-600 h-4 rounded-full transition-all"
-                        style={{
-                          width: `${(selectedCylinder.current_weight_kg / selectedCylinder.max_capacity_kg) * 100}%`,
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  {/* Log Usage */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Log Daily Usage (kg)
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        step="0.1"
-                        placeholder="Enter usage amount"
-                        value={usageInput}
-                        onChange={(e) => setUsageInput(e.target.value)}
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                      <button
-                        onClick={handleLogUsage}
-                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                      >
-                        Log
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Predict Button */}
-                  <button
-                    onClick={handlePredictNow}
-                    className="w-full py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-blue-700 transition flex items-center justify-center gap-2"
-                  >
-                    <TrendingDown className="w-5 h-5" />
-                    Predict Empty Date
-                  </button>
+                  <span className="bg-white/5 text-white border border-white/10 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                    Active Node
+                  </span>
                 </div>
 
-                {/* Prediction Result */}
-                {currentPrediction && (
-                  <div
-                    className={`${getStatusBgColor(currentPrediction.predicted_empty_days)} rounded-lg shadow-lg p-6 border-l-4 ${
-                      currentPrediction.predicted_empty_days <= 3
-                        ? 'border-red-600'
-                        : currentPrediction.predicted_empty_days <= 7
-                          ? 'border-yellow-600'
-                          : 'border-green-600'
-                    }`}
-                  >
-                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                      <Calendar className="w-6 h-6" />
-                      <span className={getStatusColor(currentPrediction.predicted_empty_days)}>
-                        Prediction Result
-                      </span>
-                    </h3>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-gray-600 mb-1">Days Remaining</p>
-                        <p
-                          className={`text-3xl font-bold ${getStatusColor(currentPrediction.predicted_empty_days)}`}
-                        >
-                          {currentPrediction.predicted_empty_days}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600 mb-1">Empty Date</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {new Date(currentPrediction.predicted_empty_date).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600 mb-1">Daily Usage</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {currentPrediction.daily_avg_usage_kg.toFixed(2)} kg/day
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600 mb-1">Confidence</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {(currentPrediction.confidence_score * 100).toFixed(0)}%
-                        </p>
-                      </div>
-                    </div>
-
-                    {currentPrediction.predicted_empty_days <= 7 && (
-                      <div className="mt-4 p-3 bg-white bg-opacity-50 rounded-lg flex items-start gap-2">
-                        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm font-semibold text-red-800">
-                          ⚠️ Your cylinder is running low. Schedule a refill soon!
-                        </p>
-                      </div>
-                    )}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-white/[0.03] border border-white/5 p-4 rounded-xl">
+                    <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-black mb-1">Current Weight</p>
+                    <p className="text-3xl font-black text-emerald-400">
+                      {selectedCylinder.current_weight_kg} <span className="text-sm font-black text-neutral-400">kg</span>
+                    </p>
                   </div>
-                )}
-              </>
-            )}
-          </div>
+                  <div className="bg-white/[0.03] border border-white/5 p-4 rounded-xl">
+                    <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-black mb-1">Max Capacity</p>
+                    <p className="text-3xl font-black text-neutral-300">
+                      {selectedCylinder.max_capacity_kg} <span className="text-sm font-black text-neutral-500">kg</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="mb-8">
+                  <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">
+                    <span>Depletion Ratio</span>
+                    <span className="text-neutral-300">
+                      {Math.round((selectedCylinder.current_weight_kg / selectedCylinder.max_capacity_kg) * 100)}% Remaining
+                    </span>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-3 border border-white/5 overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(52,211,153,0.3)]"
+                      style={{
+                        width: `${Math.min(100, Math.max(0, (selectedCylinder.current_weight_kg / selectedCylinder.max_capacity_kg) * 100))}%`,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Log Usage */}
+                <div className="mb-6 bg-white/[0.01] border border-white/5 rounded-xl p-4">
+                  <label className="block text-[10px] uppercase tracking-widest font-black text-neutral-400 mb-2">
+                    Log Gas Consumption (kg)
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      step="0.1"
+                      placeholder="e.g. 0.4"
+                      value={usageInput}
+                      onChange={(e) => setUsageInput(e.target.value)}
+                      className="flex-1 px-4 py-2.5 border border-white/10 rounded-xl bg-[#0e0e0e] text-white placeholder:text-neutral-600 text-sm focus:border-white/20 outline-none transition-all"
+                    />
+                    <button
+                      onClick={handleLogUsage}
+                      className="px-6 py-2.5 bg-white text-black rounded-xl hover:bg-neutral-200 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-white/5"
+                    >
+                      Log
+                    </button>
+                  </div>
+                </div>
+
+                {/* Predict Button */}
+                <button
+                  onClick={handlePredictNow}
+                  className="w-full py-3.5 bg-white text-black font-black text-sm uppercase tracking-widest rounded-xl hover:bg-neutral-200 transition-all flex items-center justify-center gap-2 shadow-xl shadow-white/5"
+                >
+                  <TrendingDown className="w-5 h-5" />
+                  Evaluate Empty Date
+                </button>
+              </div>
+
+              {/* Prediction Result */}
+              {currentPrediction && (
+                <div
+                  className={`${getStatusBgColor(currentPrediction.predicted_empty_days)} rounded-2xl p-6 shadow-xl transition-all`}
+                >
+                  <h3 className="text-lg font-black uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <Calendar className="w-5 h-5" />
+                    <span className={getStatusColor(currentPrediction.predicted_empty_days)}>
+                      Forecasting Result
+                    </span>
+                  </h3>
+
+                  <div className="grid grid-cols-2 gap-5">
+                    <div>
+                      <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-black mb-1">Days Remaining</p>
+                      <p
+                        className={`text-4xl font-black ${getStatusColor(currentPrediction.predicted_empty_days)}`}
+                      >
+                        {currentPrediction.predicted_empty_days}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-black mb-1">Empty Forecast</p>
+                      <p className="text-xl font-bold text-white mt-1.5">
+                        {new Date(currentPrediction.predicted_empty_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-black mb-1">Avg Daily Burn</p>
+                      <p className="text-xl font-bold text-white mt-1.5">
+                        {currentPrediction.daily_avg_usage_kg.toFixed(2)} kg
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-black mb-1">Confidence Score</p>
+                      <p className="text-xl font-bold text-white mt-1.5">
+                        {(currentPrediction.confidence_score * 100).toFixed(0)}%
+                      </p>
+                    </div>
+                  </div>
+
+                  {currentPrediction.predicted_empty_days <= 7 && (
+                    <div className="mt-5 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-2.5">
+                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5 animate-bounce" />
+                      <p className="text-xs font-bold text-red-300">
+                        Warning: Cylinder fuel depletion critical. Coordinate sharing exchange or order refill soon.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-12 text-center text-neutral-500">
+              Select or register an active cylinder node to monitor predictive metrics.
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -527,3 +555,4 @@ export const LPGTracker: React.FC = () => {
 };
 
 export default LPGTracker;
+
