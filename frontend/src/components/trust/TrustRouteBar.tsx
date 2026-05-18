@@ -5,7 +5,7 @@ const trustRoutes = [
   { label: "OTP", to: "/auth/otp-verify" },
   { label: "Setup", to: "/onboarding/setup" },
   { label: "My Trust", to: "/trust/me" },
-  { label: "Providers", to: "/community" },
+  { label: "Providers", to: "/providers/nearby" },
   { label: "Provider Detail", to: "/provider/demo-user" },
   { label: "New Dispute", to: "/disputes/new/demo-exchange" },
   { label: "Disputes", to: "/disputes" },

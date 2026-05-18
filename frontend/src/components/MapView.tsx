@@ -37,7 +37,7 @@ const createHtmlIcon = (type: string, img?: string) => {
                 </div>
                </div>`;
   } else {
-     content = `<div class="bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 border-surface active:scale-90 transition-transform">
+    content = `<div class="bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 border-surface active:scale-90 transition-transform">
                   <span class="material-symbols-outlined">local_gas_station</span>
                 </div>`;
   }
@@ -56,7 +56,7 @@ export function MapView({ mode = 'discovery' }: { mode?: 'discovery' | 'emergenc
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [markers, setMarkers] = useState<MarkerData[]>([]);
 
-  const tileUrl = theme === 'dark' 
+  const tileUrl = theme === 'dark'
     ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
     : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
 
@@ -85,10 +85,10 @@ export function MapView({ mode = 'discovery' }: { mode?: 'discovery' | 'emergenc
   if (!userLocation) {
     return (
       <div className="h-full w-full bg-[#0e0e0e] flex items-center justify-center">
-         <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-2 border-white/10 border-t-white rounded-full animate-spin"></div>
-            <span className="text-white/40 font-headline text-xs uppercase tracking-widest font-black">Syncing Geo-Node...</span>
-         </div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-2 border-white/10 border-t-white rounded-full animate-spin"></div>
+          <span className="text-white/40 font-headline text-xs uppercase tracking-widest font-black">Syncing Geo-Node...</span>
+        </div>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export function MapView({ mode = 'discovery' }: { mode?: 'discovery' | 'emergenc
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url={tileUrl}
         />
-        
+
         {/* User Marker */}
         <Marker position={userLocation} icon={createHtmlIcon('user')}>
           <Popup className="lumina-popup">
@@ -113,50 +113,50 @@ export function MapView({ mode = 'discovery' }: { mode?: 'discovery' | 'emergenc
         {markers
           .filter(m => mode === 'emergency' ? (m.type === 'mechanic' || m.type === 'emergency') : m.type === 'cylinder')
           .map((m) => (
-          <Marker 
-            key={m.id} 
-            position={[m.position.lat, m.position.lng]} 
-            icon={createHtmlIcon(m.type)}
-          >
-            <Popup className="lumina-popup">
-              <div className="w-[280px] p-0 m-0 overflow-hidden bg-transparent border-none">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-headline font-bold text-white leading-tight">
-                      {m.type === 'emergency' ? 'Critical Need' : m.ownerName || 'Station Depot'}
-                      {m.type !== 'emergency' && (
-                        <span className="inline-flex items-center ml-2 bg-blue-500/20 text-blue-400 text-[9px] px-1.5 py-0.5 rounded-sm border border-blue-500/30 font-bold uppercase tracking-wider">
-                          <span className="material-symbols-outlined text-[10px] mr-0.5" style={{ fontVariationSettings: "'FILL' 1, 'wght' 700" }}>verified</span>Verified
-                        </span>
-                      )}
-                    </h3>
-                    <p className="text-[10px] text-white/50">{m.type === 'emergency' ? 'Action Required' : `LPG Fill Level: ${m.stock || 0}%`}</p>
+            <Marker
+              key={m.id}
+              position={[m.position.lat, m.position.lng]}
+              icon={createHtmlIcon(m.type)}
+            >
+              <Popup className="lumina-popup">
+                <div className="w-[280px] p-0 m-0 overflow-hidden bg-transparent border-none">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className="font-headline font-bold text-white leading-tight">
+                        {m.type === 'emergency' ? 'Critical Need' : m.ownerName || 'Station Depot'}
+                        {m.type !== 'emergency' && (
+                          <span className="inline-flex items-center ml-2 bg-blue-500/20 text-blue-400 text-[9px] px-1.5 py-0.5 rounded-sm border border-blue-500/30 font-bold uppercase tracking-wider">
+                            <span className="material-symbols-outlined text-[10px] mr-0.5" style={{ fontVariationSettings: "'FILL' 1, 'wght' 700" }}>verified</span>Verified
+                          </span>
+                        )}
+                      </h3>
+                      <p className="text-[10px] text-white/50">{m.type === 'emergency' ? 'Action Required' : `LPG Fill Level: ${m.stock || 0}%`}</p>
+                    </div>
+                    <span className={`text-[9px] px-2 py-0.5 rounded-full uppercase tracking-widest font-black ${m.type === 'emergency' ? 'bg-red-500 text-white' : 'bg-white/10 text-white'}`}>
+                      {m.type === 'emergency' ? 'URGENT' : 'IN STOCK'}
+                    </span>
                   </div>
-                  <span className={`text-[9px] px-2 py-0.5 rounded-full uppercase tracking-widest font-black ${m.type === 'emergency' ? 'bg-red-500 text-white' : 'bg-white/10 text-white'}`}>
-                    {m.type === 'emergency' ? 'URGENT' : 'IN STOCK'}
-                  </span>
-                </div>
-                
-                <div className="aspect-video w-full rounded-lg overflow-hidden mb-3 bg-white/5">
-                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMRxzITWvNs3-beaoFwGQq2kCw34uwn_CbqRydnxVN4y3kqRHV4NvFgJapCNd9XcgJZ36aPrT0V6JqhZoKO9jWOb3YD1KXoHiI4Eiwu4HWWHqVLnXPm7fxc6hU3-wm73v6_-Y0O9eymp1a4JKWiCYj8mznRCNjB7olx9kEVyA1a3vU6eD_wEGX-Kc_sAYilAaKtEp-b4oP5qT_4vHg0FHPfQoRIMrwmCyPxOVzR3rQK4_rRZHhn0fHY3ZD-E4CtGJ-nG2HZdVF-g" className="w-full h-full object-cover" />
-                </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white">{m.price || '₹850'} <span className="text-[9px] font-normal text-white/40">/ refill</span></span>
-                  <button 
-                    onClick={() => navigate(`/booking/${m.id}`, { 
-                      state: { owner: m.ownerName, price: m.price, fill: `${m.stock}%` } 
-                    })}
-                    className="text-[10px] font-black text-white px-3 py-1 bg-white/10 rounded hover:bg-white/20 transition-all flex items-center gap-1 uppercase tracking-tight"
-                  >
-                    View Details
-                    <span className="material-symbols-outlined !text-[12px]">arrow_forward</span>
-                  </button>
+                  <div className="aspect-video w-full rounded-lg overflow-hidden mb-3 bg-white/5">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMRxzITWvNs3-beaoFwGQq2kCw34uwn_CbqRydnxVN4y3kqRHV4NvFgJapCNd9XcgJZ36aPrT0V6JqhZoKO9jWOb3YD1KXoHiI4Eiwu4HWWHqVLnXPm7fxc6hU3-wm73v6_-Y0O9eymp1a4JKWiCYj8mznRCNjB7olx9kEVyA1a3vU6eD_wEGX-Kc_sAYilAaKtEp-b4oP5qT_4vHg0FHPfQoRIMrwmCyPxOVzR3rQK4_rRZHhn0fHY3ZD-E4CtGJ-nG2HZdVF-g" className="w-full h-full object-cover" />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-white">{m.price || '₹850'} <span className="text-[9px] font-normal text-white/40">/ refill</span></span>
+                    <button
+                      onClick={() => navigate(`/booking/${m.id}`, {
+                        state: { owner: m.ownerName, price: m.price, fill: `${m.stock}%` }
+                      })}
+                      className="text-[10px] font-black text-white px-3 py-1 bg-white/10 rounded hover:bg-white/20 transition-all flex items-center gap-1 uppercase tracking-tight"
+                    >
+                      View Details
+                      <span className="material-symbols-outlined !text-[12px]">arrow_forward</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+              </Popup>
+            </Marker>
+          ))}
       </MapContainer>
 
       <style>{`

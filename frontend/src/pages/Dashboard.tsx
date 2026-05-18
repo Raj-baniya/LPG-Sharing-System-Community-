@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapView } from '../components/MapView';
@@ -194,6 +194,16 @@ export default function Dashboard() {
               <span>Home Feed</span>
             </button>
             <button
+              onClick={() => navigate('/lpg-prediction')}
+              className="w-full text-left text-[#C5C7C1] mx-0 px-6 py-3 flex items-center gap-3 hover:bg-[#1F1F1F] transition-all duration-300 group"
+            >
+              <span className="material-symbols-outlined text-emerald-400 group-hover:animate-pulse">online_prediction</span>
+              <span>LPG Prediction Hub</span>
+              <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-black tracking-widest uppercase px-1.5 py-0.5 rounded-full ml-auto">
+                AI
+              </span>
+            </button>
+            <button
               onClick={() => setActivePanel('emergency')}
               className={`w-full text-left mx-0 px-6 py-3 flex items-center gap-3 transition-all duration-300 ${activePanel === 'emergency' ? 'bg-white/5 text-white' : 'text-[#C5C7C1] hover:bg-[#1F1F1F]'}`}
             >
@@ -216,7 +226,14 @@ export default function Dashboard() {
             </button>
           </nav>
 
-          <div className="mt-auto p-4 flex flex-col gap-4 border-t border-white/5 pb-20">
+          <div className="mt-auto p-4 flex flex-col gap-3 border-t border-white/5 pb-20">
+            <button 
+              onClick={() => navigate('/lpg-prediction')}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-md active:scale-[0.98] transition-all text-center text-sm flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined !text-sm">trending_up</span>
+              LPG Prediction Hub
+            </button>
             <button 
               onClick={() => navigate('/register')}
               className="bg-white text-black font-bold py-3 rounded-md hover:bg-white/90 active:scale-[0.98] transition-all text-center text-sm"
