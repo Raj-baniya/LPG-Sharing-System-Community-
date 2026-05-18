@@ -15,7 +15,7 @@ const authRoutes = require("./routes/authRoutes");
 const dbRoutes = require("./routes/dbRoutes");
 const trustRoutes = require("./routes/trustRoutes");
 const verificationRoutes = require("./routes/verificationRoutes");
-const disputeRoutes = require("./routes/disputeRoutes");
+const disputeRoutes = require("./routes/disputes");
 const orderRoutes = require("./routes/orderRoutes");
 const resourceRoutes = require("./routes/resourceRoutes");
 const aiRoutes = require("./routes/aiRoutes");
@@ -83,6 +83,11 @@ app.use("/api/community", communityRoutes);
 app.use("/api/emergency", emergencyRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/contact", contactRoutes);
+
+// verifyRole secured endpoints
+const verifyRole = require("./middleware/verifyRole");
+app.use("/admin", verifyRole("admin"), (req, res) => res.json({ success: true, user: req.user }));
+app.use("/mechanic", verifyRole("provider"), (req, res) => res.json({ success: true, user: req.user }));
 
 app.use(notFound);
 app.use(errorHandler);

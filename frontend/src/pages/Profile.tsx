@@ -22,7 +22,7 @@ export default function Profile() {
         {/* Header */}
         <header className="flex justify-between items-center mb-10">
           <button 
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/consumer')}
             className="p-2 hover:bg-white/5 rounded-full transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-gray-400" />
@@ -106,12 +106,13 @@ export default function Profile() {
           {/* Navigation Options */}
           <VStack gap={3} align="stretch" pt={4}>
             {[
-              { label: 'Update Availability', icon: Fuel },
-              { label: 'Manage Locations', icon: MapPin },
-              { label: 'Security Settings', icon: ShieldCheck }
+              { label: 'My Trust & Verification Settings', icon: ShieldCheck, to: '/trust/me' },
+              { label: 'Update Availability', icon: Fuel, to: '/resources' },
+              { label: 'Manage Locations / Map', icon: MapPin, to: '/consumer' }
             ].map((item, idx) => (
               <button 
                 key={idx}
+                onClick={() => navigate(item.to)}
                 className="flex items-center justify-between p-5 rounded-2xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.06] hover:border-white/10 transition-all group"
               >
                 <HStack gap={4}>

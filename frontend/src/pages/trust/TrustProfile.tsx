@@ -88,14 +88,33 @@ function TrustProfileContent() {
             </section>
 
             <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                <h2 className="text-xl font-black mb-4">Verification Status</h2>
-                <ul className="space-y-2 text-sm text-neutral-300">
-                  <li>Phone verified: {trust.isPhoneVerified ? "Yes" : "No"}</li>
-                  <li>PIN verified: {trust.verification?.isPinVerified ? "Yes" : "No"}</li>
-                  <li>ID status: {trust.verification?.idStatus || "not_submitted"}</li>
-                  <li>PIN code: {trust.verification?.pinCode || "not set"}</li>
-                </ul>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col justify-between">
+                <div>
+                  <h2 className="text-xl font-black mb-4">Verification Status</h2>
+                  <ul className="space-y-2 text-sm text-neutral-300">
+                    <li>Phone verified: {trust.isPhoneVerified ? "Yes" : "No"}</li>
+                    <li>PIN verified: {trust.verification?.isPinVerified ? "Yes" : "No"}</li>
+                    <li>ID status: {trust.verification?.idStatus || "not_submitted"}</li>
+                    <li>PIN code: {trust.verification?.pinCode || "not set"}</li>
+                  </ul>
+                </div>
+
+                <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                  {!trust.isPhoneVerified && (
+                    <Link
+                      to="/auth/otp-verify"
+                      className="bg-white text-black text-center px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-neutral-200 transition-all"
+                    >
+                      Verify Phone via OTP
+                    </Link>
+                  )}
+                  <Link
+                    to="/onboarding/setup"
+                    className="bg-white/10 border border-white/10 hover:bg-white/20 text-white text-center px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all"
+                  >
+                    PIN & ID Verification Settings
+                  </Link>
+                </div>
               </div>
 
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6">

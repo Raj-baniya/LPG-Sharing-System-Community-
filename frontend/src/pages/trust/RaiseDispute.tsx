@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { trustApi } from "@/lib/trustApi";
-import { TrustRouteBar } from "@/components/trust/TrustRouteBar";
 import { AuthenticatedRoute } from "@/components/trust/AuthenticatedRoute";
 
 function RaiseDisputeContent() {
@@ -36,7 +35,6 @@ function RaiseDisputeContent() {
   return (
     <div className="min-h-screen bg-[#0e0e0e] text-white px-4 py-8">
       <div className="max-w-3xl mx-auto bg-white/5 border border-white/10 rounded-2xl p-8">
-        <TrustRouteBar />
         <h1 className="text-3xl font-black tracking-tight mb-2">Raise Dispute</h1>
         <p className="text-sm text-neutral-400 mb-6">Exchange ID: {exchangeId}</p>
 

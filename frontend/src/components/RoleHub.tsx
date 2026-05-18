@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 
 export type FeatureCard = {
@@ -16,6 +16,7 @@ type RoleHubProps = {
   accentClass: string;
   stats: Array<{ label: string; value: string; loading?: boolean }>;
   features: FeatureCard[];
+  children?: React.ReactNode;
 };
 
 const stateToneClass = {
@@ -25,7 +26,7 @@ const stateToneClass = {
   danger: 'border-red-300/30 bg-red-400/15 text-red-200',
 };
 
-export function RoleHub({ roleTitle, subtitle, accentClass, stats, features }: RoleHubProps) {
+export function RoleHub({ roleTitle, subtitle, accentClass, stats, features, children }: RoleHubProps) {
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -56,10 +57,22 @@ export function RoleHub({ roleTitle, subtitle, accentClass, stats, features }: R
         </div>
 
         <section className="rounded-3xl border border-[var(--glass-border)] bg-[var(--card-bg)] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.25)] md:p-8">
-          <p className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${accentClass}`}>
-            {roleTitle}
-          </p>
-          <h1 className="mt-4 text-3xl font-black tracking-tight md:text-4xl">Operations Workspace</h1>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="space-y-1">
+              <p className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${accentClass}`}>
+                {roleTitle}
+              </p>
+              <h1 className="mt-4 text-3xl font-black tracking-tight md:text-4xl">Workspace</h1>
+            </div>
+            
+            <Link
+              to="/profile"
+              className="flex items-center justify-center gap-2 rounded-xl bg-white/5 border border-[var(--glass-border)] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[var(--text-primary)] hover:bg-white hover:text-black hover:border-white transition-all shadow-md self-start"
+            >
+              <span className="material-symbols-outlined !text-base leading-none">person</span>
+              Profile Settings
+            </Link>
+          </div>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--text-secondary)] md:text-base">{subtitle}</p>
 
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -101,6 +114,7 @@ export function RoleHub({ roleTitle, subtitle, accentClass, stats, features }: R
             </Link>
           ))}
         </section>
+        {children && <div className="mt-10">{children}</div>}
       </div>
     </div>
   );

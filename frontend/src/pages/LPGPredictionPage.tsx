@@ -180,7 +180,7 @@ export const LPGPredictionPage: React.FC = () => {
         {/* Feedback Section */}
         <div className="bg-white/[0.02] border border-white/5 border-l-4 border-l-amber-500 rounded-2xl p-6 mt-10 backdrop-blur-md">
           <h2 className="text-lg font-bold text-white mb-2 tracking-tight flex items-center gap-2">
-            <span>🤖 Train the Neural Prediction Engine</span>
+            <span>🤖 Train the Predictive Prediction Engine</span>
           </h2>
           <p className="text-neutral-400 text-sm mb-4 leading-relaxed">
             Predictive accuracy improves with local network training. Once a cylinder runs dry, submitting its exact depletion date feeds our local machine learning model, optimizing forecast accuracy for you and your neighborhood.

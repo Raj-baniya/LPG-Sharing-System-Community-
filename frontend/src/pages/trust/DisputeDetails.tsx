@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { trustApi, type Dispute } from "@/lib/trustApi";
-import { TrustRouteBar } from "@/components/trust/TrustRouteBar";
 import { AuthenticatedRoute } from "@/components/trust/AuthenticatedRoute";
 
 function DisputeDetailsContent() {
@@ -32,7 +31,6 @@ function DisputeDetailsContent() {
   return (
     <div className="min-h-screen bg-[#0e0e0e] text-white px-4 py-8">
       <div className="max-w-4xl mx-auto space-y-6">
-        <TrustRouteBar />
         <Link to="/disputes" className="text-sm text-neutral-300 hover:text-white">
           Back to disputes
         </Link>

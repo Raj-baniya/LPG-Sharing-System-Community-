@@ -34,7 +34,7 @@ const generateMarketplaceData = (center: [number, number], count: number): Marke
       ownerName: indianNames[Math.floor(Math.random() * indianNames.length)],
       price: `₹${dynamicPrice}`,
       stock: stockLevelPercent, // In this context, stock is the fill percentage
-      img: `https://images.unsplash.com/photo-1599708151046-599187a553f1?auto=format&fit=crop&q=80&w=200`
+      img: `https://m.media-amazon.com/images/I/51IDuv7GU-L._AC_UF1000,1000_QL80_.jpg`
     };
   });
 };

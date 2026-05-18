@@ -33,7 +33,7 @@ const createHtmlIcon = (type: string, img?: string) => {
     content = `<div class="relative group">
                 <div class="absolute -inset-4 bg-emerald-500/10 rounded-full blur-xl"></div>
                 <div class="relative bg-[#131313] text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 border-white/20 active:scale-90 transition-transform overflow-hidden">
-                  <img src="${img || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAwyqWqo7k-o3a7le2NPd1aXrSehP1cR9DX7LMWev0qOxnhYl47UXLPSJSkLBQUgo_C5keAENuuQNYBH0CTWh3Ho9bV54sAeDCpvGDO8feTcuci-Fqi7uWjzKcJl6NykgbAwPIdK7I-O9EBToyfFMHaaEhMTXRy8Uzkq89JLXlciApUrfS8zdZMh5CS57gkxSMpeDZ9uKfgtDAG_zGfzDg07lLzcG7LXbcmnscmmvKVSYFbnxpPNwNcDUbCf019NsX5yDsxXee5hg'}" class="w-full h-full object-cover">
+                  <img src="${img || 'https://m.media-amazon.com/images/I/51IDuv7GU-L._AC_UF1000,1000_QL80_.jpg'}" class="w-full h-full object-cover">
                 </div>
                </div>`;
   } else {
@@ -138,7 +138,7 @@ export function MapView({ mode = 'discovery' }: { mode?: 'discovery' | 'emergenc
                   </div>
 
                   <div className="aspect-video w-full rounded-lg overflow-hidden mb-3 bg-white/5">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMRxzITWvNs3-beaoFwGQq2kCw34uwn_CbqRydnxVN4y3kqRHV4NvFgJapCNd9XcgJZ36aPrT0V6JqhZoKO9jWOb3YD1KXoHiI4Eiwu4HWWHqVLnXPm7fxc6hU3-wm73v6_-Y0O9eymp1a4JKWiCYj8mznRCNjB7olx9kEVyA1a3vU6eD_wEGX-Kc_sAYilAaKtEp-b4oP5qT_4vHg0FHPfQoRIMrwmCyPxOVzR3rQK4_rRZHhn0fHY3ZD-E4CtGJ-nG2HZdVF-g" className="w-full h-full object-cover" />
+                    <img src="https://m.media-amazon.com/images/I/51IDuv7GU-L._AC_UF1000,1000_QL80_.jpg" className="w-full h-full object-cover" />
                   </div>
 
                   <div className="flex items-center justify-between">

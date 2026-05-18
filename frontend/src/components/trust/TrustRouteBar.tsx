@@ -5,12 +5,6 @@ const trustRoutes = [
   { label: "OTP", to: "/auth/otp-verify" },
   { label: "Setup", to: "/onboarding/setup" },
   { label: "My Trust", to: "/trust/me" },
-  { label: "Providers", to: "/providers/nearby" },
-  { label: "Provider Detail", to: "/provider/demo-user" },
-  { label: "New Dispute", to: "/disputes/new/demo-exchange" },
-  { label: "Disputes", to: "/disputes" },
-  { label: "Dispute Detail", to: "/disputes/demo-id" },
-  { label: "Admin", to: "/admin/disputes" },
 ];
 
 export function TrustRouteBar() {
