@@ -89,6 +89,7 @@ function App() {
         <Route path="/provider/profile" element={<RoleRoute role="provider"><ProviderProfile /></RoleRoute>} />
         <Route path="/provider/community" element={<RoleRoute role="provider"><Community /></RoleRoute>} />
         <Route path="/provider/community/create" element={<RoleRoute role="provider"><CreatePost /></RoleRoute>} />
+        <Route path="/provider/community/post/:id" element={<RoleRoute role="provider"><PostDetails /></RoleRoute>} />
         <Route path="/consumer" element={<RoleRoute role="consumer"><ConsumerHome /></RoleRoute>} />
 
         {/* Session Auth Route guards */}

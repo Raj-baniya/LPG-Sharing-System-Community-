@@ -473,9 +473,11 @@ export default function Community() {
                         </span>
                       )}
                     </div>
-                    <h3 className="text-xl font-bold group-hover:text-emerald-300 transition-colors">
-                      {post.title}
-                    </h3>
+                    <Link to={`${communityBasePath}/post/${post.id}`}>
+                      <h3 className="text-xl font-bold group-hover:text-emerald-300 transition-colors hover:underline decoration-emerald-500/50 cursor-pointer">
+                        {post.title}
+                      </h3>
+                    </Link>
                   </div>
 
                   {/* Pricing dynamic badges */}

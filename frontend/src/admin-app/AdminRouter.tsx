@@ -10,6 +10,7 @@ import AuditLogs from './pages/AuditLogs';
 import AdminProfile from './pages/AdminProfile';
 import Community from '@/pages/Community';
 import CreatePost from '@/pages/CreatePost';
+import PostDetails from '@/pages/PostDetails';
 
 export default function AdminRouter() {
   return (
@@ -26,6 +27,7 @@ export default function AdminRouter() {
         <Route path="/profile" element={<AdminProfile />} />
         <Route path="/community" element={<Community />} />
         <Route path="/community/create" element={<CreatePost />} />
+        <Route path="/community/post/:id" element={<PostDetails />} />
         <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
       </Routes>
     </AdminShell>

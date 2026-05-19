@@ -121,6 +121,12 @@ function ConsumerHomeContent() {
       stateLabel: loading ? 'Loading' : `${providerCount} live`,
       stateTone: 'good',
     },
+    {
+      title: 'Community Board',
+      description: 'Share updates, report emergencies, or sell community resources & help peers.',
+      to: '/community',
+      badge: 'Forums',
+    },
   ];
 
   const filteredPanelItems = useMemo(() => {

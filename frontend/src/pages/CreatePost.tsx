@@ -10,7 +10,12 @@ export default function CreatePost() {
   const user = getStoredUser();
   const role = String(user?.role || "").toLowerCase();
   const isProviderRole = ["provider", "verified_reseller", "mechanic"].includes(role);
-  const communityBasePath = isProviderRole ? "/provider/community" : "/community";
+  const isAdminRole = role === "admin";
+  const communityBasePath = isProviderRole 
+    ? "/provider/community" 
+    : isAdminRole 
+      ? "/admin/community" 
+      : "/community";
 
   const [postType, setPostType] = useState("update");
   const [title, setTitle] = useState("");

@@ -293,7 +293,7 @@ export default function AdminDashboard() {
               </Link>
            </div>
 
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 text-sm">
              <Link to="/admin/trust-overview" className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 hover:bg-white/5 transition-all">
                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Trust Overview</p>
                <p className="mt-2 font-bold">Inspect provider trust posture and verification health.</p>
@@ -305,6 +305,10 @@ export default function AdminDashboard() {
              <Link to="/admin/suspensions" className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 hover:bg-white/5 transition-all">
                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Suspensions</p>
                <p className="mt-2 font-bold">Suspend or unsuspend providers with an audit trail.</p>
+             </Link>
+             <Link to="/admin/community" className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 hover:bg-white/5 transition-all">
+               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-500">Community Board</p>
+               <p className="mt-2 font-bold">Moderate and review user listings, SOS alerts, and safety posts.</p>
              </Link>
            </div>
         </div>
